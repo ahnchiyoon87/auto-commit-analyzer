@@ -9,6 +9,9 @@ GitHub 커밋을 자동으로 분석하고 연구노트를 생성하는 도구�
 - **위험도 평가**: 각 파일과 커밋의 위험도를 자동 평가
 - **연구노트 생성**: 마크다운과 JSON 형태로 분석 결과 저장
 - **한국 시간 기준**: KST 기준으로 오늘 날짜의 커밋만 분석
+- **스마트 필터링**: README 파일 자동 제외로 핵심 변경사항에 집중
+- **대용량 커밋 처리**: 파일이 많은 커밋을 청크 단위로 분할 분석
+- **커밋 링크**: GitHub 커밋 링크 자동 생성
 
 ## 🚀 설치 및 설정
 
@@ -49,10 +52,13 @@ OUT_DIR=./reports
 
 ```python
 DEFAULT_REPOS = [
-    "your-org/your-repo1",
-    "your-org/your-repo2"
+    "msa-ez/legacy-modernizer-frontend",
+    "uengine-oss/legacy-modernizer-backend", 
+    "ahnchiyoon87/Antlr-Server"
 ]
 ```
+
+**참고**: 환경변수로는 설정할 수 없으며, 코드에서 직접 수정해야 합니다.
 
 ## 📖 사용법
 
@@ -73,24 +79,26 @@ python main.py
 ### 마크다운 출력
 
 ```markdown
-# 🧠 연구노트 — 2024-01-15 (KST)
+# 🧠 연구노트 — 2025-10-22 (KST)
 
-- 생성시각(UTC): 2024-01-15 03:30:00 UTC
+- 생성시각(UTC): 2025-10-22 13:30:38 UTC
 - 모델: `gpt-4o-mini`
-- 리포지토리: your-org/your-repo
+- 리포지토리: msa-ez/legacy-modernizer-frontend, uengine-oss/legacy-modernizer-backend, ahnchiyoon87/Antlr-Server
 - 브랜치: main
-- 작성자: {'login': 'your-username', 'email': 'your@email.com'}
+- 작성자: {'login': 'ahnchiyoon87', 'email': 'ahnpybara@uengine.org'}
 
-## 📦 your-org/your-repo
+## 📦 uengine-oss/legacy-modernizer-backend
 
-### 🔖 a1b2c3d — feat: 새로운 기능 추가
-- Date: 2024-01-15 12:30:00 KST
-- Risk: **low**
+### 🔖 57a4c6e — rule 파일화
+- Date: 2025-10-22 18:11:46 KST
+- Risk: **medium**
+- Repository: uengine-oss/legacy-modernizer-backend
+- Commit Link: https://github.com/uengine-oss/legacy-modernizer-backend/commit/57a4c6e9ae3798458193042da60ac548fc7528f4
 
-> 새로운 API 엔드포인트를 추가하고 관련 테스트를 작성했습니다.
+> This commit introduces significant enhancements to the project, including the addition of new package versions and refactoring of the controller generation code.
 
-- `src/api/users.py` (added, risk=low)
-  - 새로운 사용자 관리 API 엔드포인트 추가
+- `Pipfile` (modified, risk=medium)
+  - pyyaml과 jinja2 패키지 버전 추가.
 ```
 
 ## 🔧 설정 옵션
@@ -106,14 +114,16 @@ python main.py
 | `OPENAI_MODEL` | 사용할 OpenAI 모델 | `gpt-4o-mini` |
 | `BRANCH` | 분석할 브랜치 | `main` |
 | `OUT_DIR` | 결과 저장 폴더 | `./reports` |
+| `MAX_FILES_PER_CALL` | 대용량 커밋 분석 시 파일 분할 단위 | `6` |
 
 ### 코드 설정
 
 `main.py`에서 다음 값들을 수정할 수 있습니다:
 
-- `DEFAULT_REPOS`: 분석할 리포지토리 목록
+- `DEFAULT_REPOS`: 분석할 리포지토리 목록 (코드에서 직접 설정)
 - `MY_GITHUB_LOGIN`: GitHub 로그인 아이디 (환경변수 우선)
 - `MY_GITHUB_EMAIL`: 커밋 이메일 (환경변수 우선)
+- `MAX_FILES_PER_CALL`: 대용량 커밋 분석 시 파일 분할 단위 (기본값: 6)
 
 ## 📁 프로젝트 구조
 
@@ -123,10 +133,9 @@ report-generator/
 ├── requirements.txt     # Python 의존성
 ├── env.template        # 환경변수 템플릿
 ├── README.md           # 프로젝트 문서
-├── .gitignore          # Git 무시 파일
 └── reports/            # 분석 결과 저장 폴더
-    ├── research_note_20240115.md
-    └── research_note_20240115.json
+    ├── research_note_20251022.md
+    └── research_note_20251022.json
 ```
 
 ## 🛠️ 개발 정보
@@ -145,9 +154,12 @@ report-generator/
 
 1. 오늘 날짜(KST) 기준으로 커밋 조회
 2. 본인 커밋만 필터링
-3. 각 파일의 diff를 OpenAI로 분석
-4. 커밋 전체 요약 생성
-5. 마크다운과 JSON으로 결과 저장
+3. README 파일 자동 제외
+4. 각 파일의 diff를 OpenAI로 분석
+5. 대용량 커밋의 경우 청크 단위로 분할 처리
+6. 커밋 전체 요약 생성
+7. GitHub 커밋 링크 자동 생성
+8. 마크다운과 JSON으로 결과 저장
 
 ## 🤝 기여하기
 
