@@ -1,0 +1,17 @@
+# GitHub API
+PyGithub==2.1.1
+
+# OpenAI API
+openai==1.12.0
+
+# 환경변수 관리
+python-dotenv==1.0.0
+
+# 날짜/시간 처리
+python-dateutil==2.8.2
+
+# 재시도 로직
+tenacity==8.2.3
+
+# HTTP 클라이언트
+httpx==0.25.2
